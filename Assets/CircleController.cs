@@ -25,19 +25,28 @@ public class CircleController : MonoBehaviour
     [SerializeField]
     LayerMask groundLayer;
     bool mayJump = true;
+    bool facingRight = true;
     void Start()
     {
         anim = GetComponent<Animator>();
+        rb = GetComponent<Rigidbody2D>();
     }
     void Update()
     {
+
         float moveX = Input.GetAxisRaw("Horizontal");
-
         Vector2 movementX = new Vector2(moveX, 0);
-
         Vector2 movement = movementX;
-
         transform.Translate(movement * speed * Time.deltaTime);
+
+        if (movement.x < 0 && facingRight)
+        {
+            Flip();
+        }
+        else if (movement.x > 0 && !facingRight)
+        {
+            Flip();
+        }
 
         Vector3 size = MakeGroundcheckSize();
         bool isGrounded = Physics2D.OverlapBox(groundCheck.position, size, 0, groundLayer);
@@ -48,7 +57,6 @@ public class CircleController : MonoBehaviour
             Rigidbody2D rb = GetComponent<Rigidbody2D>();
             Vector2 jump = Vector2.up * jumpforce;
             rb.AddForce(jump);
-            anim.SetBool("isJumping", false);
             mayJump = false;
 
         }
@@ -57,17 +65,39 @@ public class CircleController : MonoBehaviour
             mayJump = true;
         }
 
-        if (rb.velocity.y == 0)
+        anim.SetFloat("velocityY", rb.velocity.y);
+        anim.SetFloat("moveX", moveX);
+        anim.SetBool("isGrounded", isGrounded);
+
+        void Flip()
         {
-            anim.SetBool("isJumping", false);
-            anim.SetBool("isFalling", false);
+            Vector3 currentScale = gameObject.transform.localScale;
+            currentScale.x *= -1;
+            gameObject.transform.localScale = currentScale;
+
+            facingRight = !facingRight;
         }
 
-        if (rb.velocity.y < 0)
+        if (Input.GetMouseButtonDown(0))
         {
-            anim.SetBool("isJumping", false);
-            anim.SetBool("isFalling", true);
+            anim.SetTrigger("attack");
         }
+        // if (rb.velocity.y == 0)
+        // {
+        //     anim.SetBool("isJumping", false);
+        //     anim.SetBool("isFalling", false);
+        // }
+
+        // if (rb.velocity.y > 0)
+        // {
+        //     anim.SetBool("isJumping", true);
+        // }
+
+        // if (rb.velocity.y < 0)
+        // {
+        //     anim.SetBool("isJumping", false);
+        //     anim.SetBool("isFalling", true);
+        // }
 
     }
     private void OnDrawGizmos()
