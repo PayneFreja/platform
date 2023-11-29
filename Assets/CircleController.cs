@@ -14,6 +14,9 @@ public class CircleController : MonoBehaviour
     float jumpforce = 100;
 
     [SerializeField]
+    int health = 100;
+
+    [SerializeField]
     Transform groundCheck;
 
     [SerializeField]
@@ -35,15 +38,19 @@ public class CircleController : MonoBehaviour
     {
 
         float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
         Vector2 movementX = new Vector2(moveX, 0);
-        Vector2 movement = movementX;
-        transform.Translate(movement * speed * Time.deltaTime);
+        Vector2 movementY = new Vector2(0, moveY);
+        Vector2 movementx = movementX;
+        // Vector2 movementy = movementY;
+        transform.Translate(movementx * speed * Time.deltaTime);
+        // transform.Translate(movementy * speed * Time.deltaTime);
 
-        if (movement.x < 0 && facingRight)
+        if (movementx.x < 0 && facingRight)
         {
             Flip();
         }
-        else if (movement.x > 0 && !facingRight)
+        else if (movementx.x > 0 && facingRight == false)
         {
             Flip();
         }
@@ -75,31 +82,30 @@ public class CircleController : MonoBehaviour
             currentScale.x *= -1;
             gameObject.transform.localScale = currentScale;
 
-            facingRight = !facingRight;
+            facingRight = facingRight == false;
         }
 
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("attack");
         }
-        // if (rb.velocity.y == 0)
-        // {
-        //     anim.SetBool("isJumping", false);
-        //     anim.SetBool("isFalling", false);
-        // }
-
-        // if (rb.velocity.y > 0)
-        // {
-        //     anim.SetBool("isJumping", true);
-        // }
-
-        // if (rb.velocity.y < 0)
-        // {
-        //     anim.SetBool("isJumping", false);
-        //     anim.SetBool("isFalling", true);
-        // }
 
     }
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "EnemySword")
+        {
+            health--;
+        }
+
+        if (other.gameObject.tag == "Climbable")
+        {
+            // transform.Translate(movementy * speed * Time.deltaTime);
+        }
+    }
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
