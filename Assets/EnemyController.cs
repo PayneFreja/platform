@@ -30,12 +30,16 @@ public class EnemyController : MonoBehaviour
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
+
+    // metod som ser till att enemyn inte faller igenom marken
     void Update()
     {
         Vector3 size = MakeGroundcheckSize();
         bool isGrounded = Physics2D.OverlapBox(groundCheck.position, size, 0, groundLayer);
 
     }
+
+    //om enemyn kolliderar med ett objekt med taggen "player" så ska attack animationen spelas upp
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "Player")
@@ -44,6 +48,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    //if sats som kollar om enemyn kolliderar med ett objekt med taggen "playersword" så ska den tappa hälsa
     void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.tag == "PlayerSword")
@@ -51,8 +56,6 @@ public class EnemyController : MonoBehaviour
             health--;
         }
     }
-
-
 
     private void OnDrawGizmos()
     {

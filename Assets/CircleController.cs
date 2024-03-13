@@ -7,12 +7,15 @@ using UnityEngine;
 public class CircleController : MonoBehaviour
 {
 
+    //sätter ens snabbhet till 5
     [SerializeField]
     float speed = 5;
 
+    //sätter kraften man ska hoppa med till 100
     [SerializeField]
     float jumpforce = 100;
 
+    //sätter hälsan till 100
     [SerializeField]
     int health = 100;
 
@@ -27,7 +30,10 @@ public class CircleController : MonoBehaviour
 
     [SerializeField]
     LayerMask groundLayer;
+    //bool som sätter mayjump till true
     bool mayJump = true;
+
+    //bool som sätter facingright till sant 
     bool facingRight = true;
     void Start()
     {
@@ -36,20 +42,22 @@ public class CircleController : MonoBehaviour
     }
     void Update()
     {
-
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
         Vector2 movementX = new Vector2(moveX, 0);
         Vector2 movementY = new Vector2(0, moveY);
         Vector2 movementx = movementX;
-        // Vector2 movementy = movementY;
         transform.Translate(movementx * speed * Time.deltaTime);
-        // transform.Translate(movementy * speed * Time.deltaTime);
 
+
+        //if sats som kollar om spelarens movementX är mindre än 0 (går åt vänster)
+        //och spelaren kollar åt höger då ska metoden flip köras 
         if (movementx.x < 0 && facingRight)
         {
+
             Flip();
         }
+        //else if som kollar ifall if satsen ovan är falsk då ska flip metoden köras igen
         else if (movementx.x > 0 && facingRight == false)
         {
             Flip();
@@ -76,6 +84,8 @@ public class CircleController : MonoBehaviour
         anim.SetFloat("moveX", moveX);
         anim.SetBool("isGrounded", isGrounded);
 
+
+        //flip metod som flippar gubben från att kolla åt ena hållet till det andra
         void Flip()
         {
             Vector3 currentScale = gameObject.transform.localScale;
@@ -85,6 +95,7 @@ public class CircleController : MonoBehaviour
             facingRight = facingRight == false;
         }
 
+        //if sats som kollar ifall man vänsterklickar på musen så ska attack animationen köras
         if (Input.GetMouseButtonDown(0))
         {
             anim.SetTrigger("attack");
@@ -93,16 +104,12 @@ public class CircleController : MonoBehaviour
     }
 
 
+    //if sats som kollar om spelaren kolliderar med ett objekt med taggen "enemysword" så ska man tappa hälsa
     void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject.tag == "EnemySword")
         {
             health--;
-        }
-
-        if (other.gameObject.tag == "Climbable")
-        {
-            // transform.Translate(movementy * speed * Time.deltaTime);
         }
     }
 
