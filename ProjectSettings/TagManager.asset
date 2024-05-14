@@ -8,6 +8,7 @@ TagManager:
   - Climbable
   - PlayerSword
   - EnemySword
+  - food
   layers:
   - Default
   - TransparentFX

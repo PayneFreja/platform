@@ -15,9 +15,12 @@ public class CircleController : MonoBehaviour
     [SerializeField]
     float jumpforce = 100;
 
-    //sätter hälsan till 100
-    [SerializeField]
-    int health = 100;
+    public int maxHealth = 5;
+    public int currentHealth;
+
+    public HealthBar healthBar;
+    public GameManagerController gameManager;
+    private bool isDead;
 
     [SerializeField]
     Transform groundCheck;
@@ -39,6 +42,8 @@ public class CircleController : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
     }
     void Update()
     {
@@ -54,7 +59,6 @@ public class CircleController : MonoBehaviour
         //och spelaren kollar åt höger då ska metoden flip köras 
         if (movementx.x < 0 && facingRight)
         {
-
             Flip();
         }
         //else if som kollar ifall if satsen ovan är falsk då ska flip metoden köras igen
@@ -101,15 +105,25 @@ public class CircleController : MonoBehaviour
             anim.SetTrigger("attack");
         }
 
+        //kallar på gameOver funktionen från gameManager ifall health är lika med eller mindre än 0 
+        //och ifall boolen isDead är false (alltså att spelaren inte redan är död)
+        if (currentHealth <= 0 && isDead == false)
+        {
+            //sätter boolen isDead till true
+            isDead = true;
+            gameManager.gameOver();
+        }
+
     }
 
-
-    //if sats som kollar om spelaren kolliderar med ett objekt med taggen "enemysword" så ska man tappa hälsa
     void OnTriggerEnter2D(Collider2D other)
     {
+
+        //if sats som kollar om spelaren kolliderar med ett objekt med taggen "enemysword" så ska man tappa hälsa
         if (other.gameObject.tag == "EnemySword")
         {
-            health--;
+            currentHealth--;
+            healthBar.SetHealth(currentHealth);
         }
     }
 
