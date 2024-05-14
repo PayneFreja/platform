@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Enemy
   - Climbable
+  - PlayerSword
+  - EnemySword
   layers:
   - Default
   - TransparentFX

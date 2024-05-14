@@ -6,10 +6,6 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-
-    [SerializeField]
-    float speed = 5;
-
     [SerializeField]
     Transform groundCheck;
 
