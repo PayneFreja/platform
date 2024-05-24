@@ -9,6 +9,7 @@ TagManager:
   - PlayerSword
   - EnemySword
   - food
+  - spikes
   layers:
   - Default
   - TransparentFX

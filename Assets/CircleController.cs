@@ -20,13 +20,16 @@ public class CircleController : MonoBehaviour
 
     public HealthBar healthBar;
     public GameManagerController gameManager;
-    private bool isDead;
+    private bool isDead = false;
 
     [SerializeField]
     Transform groundCheck;
 
     [SerializeField]
     float groundRadius = 0.1f;
+
+    float timeBetweenAttack = 1;
+    float timer = 0;
 
     private Animator anim;
     private Rigidbody2D rb;
@@ -38,6 +41,7 @@ public class CircleController : MonoBehaviour
 
     //bool som sätter facingright till sant 
     bool facingRight = true;
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -45,25 +49,29 @@ public class CircleController : MonoBehaviour
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
     }
+
     void Update()
     {
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
         Vector2 movementX = new Vector2(moveX, 0);
-        Vector2 movementY = new Vector2(0, moveY);
         Vector2 movementx = movementX;
         transform.Translate(movementx * speed * Time.deltaTime);
+        timer += Time.deltaTime;
 
 
         //if sats som kollar om spelarens movementX är mindre än 0 (går åt vänster)
         //och spelaren kollar åt höger då ska metoden flip köras 
         if (movementx.x < 0 && facingRight)
         {
+            transform.position = new Vector3(transform.position.x - 1f, transform.position.y);
             Flip();
         }
+
         //else if som kollar ifall if satsen ovan är falsk då ska flip metoden köras igen
         else if (movementx.x > 0 && facingRight == false)
         {
+            transform.position = new Vector3(transform.position.x + 1f, transform.position.y);
             Flip();
         }
 
@@ -97,20 +105,25 @@ public class CircleController : MonoBehaviour
             gameObject.transform.localScale = currentScale;
 
             facingRight = facingRight == false;
+
         }
 
         //if sats som kollar ifall man vänsterklickar på musen så ska attack animationen köras
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && timer > timeBetweenAttack)
         {
             anim.SetTrigger("attack");
+            timer = 0;
         }
 
         //kallar på gameOver funktionen från gameManager ifall health är lika med eller mindre än 0 
         //och ifall boolen isDead är false (alltså att spelaren inte redan är död)
+        //"stänger av" spelar objektet när den dör
+        //kallar på gameover metoden från gameManager
         if (currentHealth <= 0 && isDead == false)
         {
             //sätter boolen isDead till true
             isDead = true;
+            gameObject.SetActive(false);
             gameManager.gameOver();
         }
 
@@ -127,6 +140,19 @@ public class CircleController : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D other)
+    {
+
+        //if sats som kollar om spelaren kolliderar med ett objekt med taggen "enemysword" så ska man tappa hälsa
+        if (other.gameObject.tag == "food")
+        {
+            currentHealth++;
+            healthBar.SetHealth(currentHealth);
+            Destroy(other.gameObject);
+        }
+    }
+
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
@@ -137,5 +163,4 @@ public class CircleController : MonoBehaviour
     }
 
     private Vector3 MakeGroundcheckSize() => new Vector3(1, groundRadius);
-
 }
